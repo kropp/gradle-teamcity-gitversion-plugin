@@ -1,6 +1,7 @@
 plugins {
     id 'groovy'
     id 'com.gradle.plugin-publish' version '0.9.1'
+    id 'com.github.kropp.teamcity-gitversion' version '0.1'
 }
 
 repositories {
@@ -8,7 +9,6 @@ repositories {
 }
 
 group = 'com.github.kropp'
-version = '0.1' // temporary
 
 dependencies {
     compile gradleApi()
@@ -22,12 +22,12 @@ dependencies {
 
 // release publishing to gradle plugin repo
 pluginBundle {
-    website = 'https://github.com/kropp/gradle-gitversion-plugin'
-    vcsUrl = 'https://github.com/kropp/gradle-gitversion-plugin'
+    website = 'https://github.com/kropp/gradle-teamcity-gitversion-plugin'
+    vcsUrl = 'https://github.com/kropp/gradle-teamcity-gitversion-plugin'
     description = 'A plugin for setting project version based on Git tag and branch names'
     tags = ['git', 'version', 'teamcity']
     plugins {
-        gitSemVerPlugin {
+        teamcityGitVersionPlugin {
             id = 'com.github.kropp.teamcity-gitversion'
             displayName = 'Git version'
         }
