@@ -5,19 +5,18 @@ import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-
 /**
  * @author Victor Kropp
  */
 class GitVersionPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
-        Repository repository = new FileRepositoryBuilder().setGitDir(new File(".git")).readEnvironment().findGitDir().build()
+        Repository repository = new FileRepositoryBuilder().readEnvironment().findGitDir().build()
         Git git = new Git(repository)
 
         def strategies = [new GitTagVersionStrategy(git), new GitBranchVersionStrategy(git)]
 
-        def version = updateVersion(strategies.findResult { it.version } ?: Version.EMPTY as Version)
+        def version = updateVersion(strategies.findResult { it.version } ?: Version.INITIAL as Version)
 
         if (version != null) {
             println "Setting project version $version"
@@ -29,11 +28,15 @@ class GitVersionPlugin implements Plugin<Project> {
     }
 
     static String updateVersion(Version ver) {
-        if (isTeamCity()) {
-            ver.incBuild().toString()
-        } else {
-            ver.toString() + "-dev"
+        if (ver.isDirty()) {
+            if (!isTeamCity()) {
+                return ver.toString() + "-dev"
+            } else {
+                return ver.incBuild().toString()
+            }
         }
+
+        return ver.toString()
     }
 
     private static boolean isTeamCity() {

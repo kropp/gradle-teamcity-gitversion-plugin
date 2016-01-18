@@ -21,7 +21,7 @@ class GitBranchVersionStrategy implements VersionStrategy {
         for (Ref ref : call) {
             def name = strip(ref.name, "refs/heads/")
             if (name != "master") {
-                return new Version(strip(name, "release-"))
+                return new Version(strip(name, "release-"), true)
             }
         }
         null

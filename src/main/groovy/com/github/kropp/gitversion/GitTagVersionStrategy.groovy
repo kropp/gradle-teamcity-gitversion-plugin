@@ -22,10 +22,10 @@ class GitTagVersionStrategy implements VersionStrategy {
         }
 
         def matcher = desc =~ /(.*)-(\d+)-(\w+)/
-        if (!matcher.matches()) {
-            return new Version(strip(strip(desc, "build-"), "v"))
+        if (matcher.matches()) {
+            new Version(matcher.group(1), true)
+        } else {
+            new Version(strip(strip(desc, "build-"), "v"), git.status().call().hasUncommittedChanges())
         }
-
-        new Version(matcher.group(1))
     }
 }
