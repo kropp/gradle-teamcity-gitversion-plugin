@@ -1,11 +1,21 @@
 plugins {
     id 'groovy'
+    id 'idea'
     id 'com.gradle.plugin-publish' version '0.9.1'
     id 'com.github.kropp.teamcity-gitversion' version '0.1.2'
 }
 
 repositories {
     mavenCentral()
+}
+
+sourceCompatibility = 1.7
+
+idea {
+    module {
+        jdkName = '1.7'
+        inheritOutputDirs = true
+    }
 }
 
 group = 'com.github.kropp'
