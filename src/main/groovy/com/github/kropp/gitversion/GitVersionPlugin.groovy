@@ -5,6 +5,9 @@ import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+
+import static com.github.kropp.gitversion.StringUtil.strip
+
 /**
  * @author Victor Kropp
  */
@@ -16,7 +19,7 @@ class GitVersionPlugin implements Plugin<Project> {
 
         def strategies = [new GitTagVersionStrategy(git), new GitBranchVersionStrategy(git)]
 
-        def version = updateVersion(strategies.findResult { it.version } ?: Version.INITIAL as Version)
+        def version = updateVersion(git, strategies.findResult { it.version } ?: Version.INITIAL as Version)
 
         if (version != null) {
             println "Setting project version $version"
@@ -27,12 +30,12 @@ class GitVersionPlugin implements Plugin<Project> {
         }
     }
 
-    static String updateVersion(Version ver) {
+    static String updateVersion(Git git, Version ver) {
         if (ver.isDirty()) {
             if (!isTeamCity()) {
                 return ver.toString() + "-dev"
             } else {
-                return ver.incBuild().toString()
+                return incrementBuildNumber(git, ver).toString()
             }
         }
 
@@ -41,5 +44,17 @@ class GitVersionPlugin implements Plugin<Project> {
 
     private static boolean isTeamCity() {
         System.getenv("TEAMCITY_VERSION") != null
+    }
+
+    private static incrementBuildNumber(Git git, Version current) {
+        def max = current.build
+        def tagList = git.tagList().call()
+        for (def tag : tagList) {
+            def c = new Version(strip(strip(strip(tag.name, "refs/tags/"), "build-"), "v"), false)
+            if (c.major == current.major && c.minor == current.minor && c.build > max) {
+                max = c.build
+            }
+        }
+        return current.withBuild(max + 1)
     }
 }

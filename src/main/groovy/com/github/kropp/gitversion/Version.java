@@ -12,7 +12,7 @@ public class Version {
     private final int build;
     private final boolean dirty;
 
-    public static Version EMPTY = new Version(0, 0, 0, false);
+    public static Version UNKNOWN = new Version(0, 0, 0, false);
     public static Version INITIAL = new Version(0, 1, 0, false);
 
     public Version(int major, int minor, int build, boolean dirty) {
@@ -44,6 +44,18 @@ public class Version {
         this.build = build;
     }
 
+    public int getBuild() {
+        return build;
+    }
+
+    public int getMajor() {
+        return major;
+    }
+
+    public int getMinor() {
+        return minor;
+    }
+
     public boolean isDirty() {
         return dirty;
     }
@@ -55,5 +67,9 @@ public class Version {
     @Override
     public String toString() {
         return major + "." + minor + "." + build;
+    }
+
+    public Version withBuild(int build) {
+        return new Version(major, minor, build, false);
     }
 }
