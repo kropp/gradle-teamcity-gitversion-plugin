@@ -25,7 +25,7 @@ class GitVersionPlugin implements Plugin<Project> {
             if (project.version != version) {
                 project.version = version
 
-                if (project.parent != null && project.parent.version != version) {
+                if (project.parent == null || project.parent.version != version) {
                     project.logger.info("Setting project version $version")
                     if (isTeamCity()) {
                         println "##teamcity[buildNumber '$version']"
