@@ -22,11 +22,16 @@ class GitVersionPlugin implements Plugin<Project> {
         def version = updateVersion(git, strategies.findResult { it.version } ?: Version.INITIAL as Version)
 
         if (version != null) {
-            println "Setting project version $version"
-            if (isTeamCity()) {
-                println "##teamcity[buildNumber '$version']"
+            if (project.version != version) {
+                project.version = version
+
+                if (project.parent != null && project.parent.version != version) {
+                    println "Setting project version $version"
+                    if (isTeamCity()) {
+                        println "##teamcity[buildNumber '$version']"
+                    }
+                }
             }
-            project.version = version
         }
     }
 
