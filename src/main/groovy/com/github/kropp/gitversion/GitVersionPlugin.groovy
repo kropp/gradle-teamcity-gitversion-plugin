@@ -26,7 +26,7 @@ class GitVersionPlugin implements Plugin<Project> {
             if (isTeamCity()) {
                 println "##teamcity[buildNumber '$version']"
             }
-            project.ext.version = version
+            project.version = version
         }
     }
 
